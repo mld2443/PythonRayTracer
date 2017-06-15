@@ -3,7 +3,7 @@ from operator import mul,sub
 
 class Vector:
 	"""A math vector capable of indication direction and magnitude"""
-	
+
 	def __init__(self, xyz):
 		self.xyz = xyz
 
@@ -19,33 +19,38 @@ class Vector:
 		mag = self.mag()
 		return Vector([x/mag for x in self.xyz])
 
-	def __add__(self, rhs):
-		if isinstance(rhs, Vector):
-			return Vector(list(map(sum, zip(self.xyz, rhs.xyz))))
-		else:
-			return NotImplemented
-
-	def __sub__(self, rhs):
-		if isinstance(rhs, Vector):
-			return Vector(list(map(sub, self.xyz, rhs.xyz)))
-		else:
-			return NotImplemented
-
-	def __mul__(self, rhs):
+	def dot(self, rhs):
 		# Dot-product
 		if isinstance(rhs, Vector):
 			return sum(map(mul, self.xyz, rhs.xyz))
-		elif isinstance(rhs, (int, float)):
-			return Vector([x * rhs for x in self.xyz])
-		else:
-			return NotImplemented
+		return NotImplemented
 
-	def __matmul__(self, rhs):
+	def cross(self, rhs):
 		# Cross-product
 		if isinstance(rhs, Vector):
 			return Vector([self[1]*rhs[2] - self[2]*rhs[1],
         	 self.xyz[2]*rhs[0] - self[0]*rhs[2],
         	 self.xyz[0]*rhs[1] - self[1]*rhs[0]])
+		return NotImplemented
+
+	def __add__(self, rhs):
+		if isinstance(rhs, Vector):
+			return Vector(list(map(sum, zip(self.xyz, rhs.xyz))))
+		return NotImplemented
+
+	def __sub__(self, rhs):
+		if isinstance(rhs, Vector):
+			return Vector(list(map(sub, self.xyz, rhs.xyz)))
+		return NotImplemented
+
+	def __mul__(self, rhs):
+		if isinstance(rhs, Vector):
+			# Elementwise product
+			return Vector(list(map(mul, self.xyz, rhs.xyz)))
+		elif isinstance(rhs, (int, float)):
+			# Scaling
+			return Vector([x * rhs for x in self.xyz])
+		return NotImplemented
 
 	def __repr__(self):
 		return self.xyz.__repr__()
@@ -61,7 +66,7 @@ def rand_unit_vector():
 def reflect(dir, normal):
     """Reflect a vector across a surface,
     assumes dir and normal are unit vectors"""
-    return (dir - normal * (2 * (dir * normal))).unit()
+    return (dir - normal * (2 * dir.dot(normal))).unit()
 
 def refract(dir, normal):
 	"""refract a vector on surface with normal

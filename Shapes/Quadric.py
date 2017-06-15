@@ -1,5 +1,5 @@
 from .Shape import *
-from .Ray import *
+from Utility.Ray import *
 
 class Quadric(Shape):
     """
@@ -40,9 +40,9 @@ class Quadric(Shape):
         V8 = rCam * 2
 
         # Calculate the quadratic coefficients
-        A = ABC * V1 + DEF * V2
-        B = ABC * V3 + DEF * V4 + GHI * V5
-        C = ABC * V6 + DEF * V7 + GHI * V8 + self.equ[9]
+        A = ABC.dot(V1) + DEF.dot(V2)
+        B = ABC.dot(V3) + DEF.dot(V4) + GHI.dot(V5)
+        C = ABC.dot(V6) + DEF.dot(V7) + GHI.dot(V8) + self.equ[9]
 
         # Calculate the squared value for our quadratic formula
         square = B**2 - A * C

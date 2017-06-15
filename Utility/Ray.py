@@ -5,7 +5,8 @@ class Ray:
     def __init__(self, origin, direction):
         self.ori = origin
         self.dir = direction.unit()
-        self.inv = [1 / d for d in self.dir.xyz]
+        #TODO: I can't remember why I put this here
+        #self.inv = [1 / d for d in self.dir.xyz]
 
     def traverse(self, dist):
         # Returns a point 'dist' units away from origin in direction
@@ -27,8 +28,7 @@ class Ray:
         # to prevent them from intersecting again
         if isinstance(dist, (int, float)):
             return Ray(self.ori + self.dir * dist, self.dir)
-        else:
-            return NotImplemented
+        return NotImplemented
 
     def __repr__(self):
         return "Origin: %s, Direction: %s" % (self.ori, self.dir)
