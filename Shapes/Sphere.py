@@ -1,4 +1,4 @@
-from .Quadric import Qaudric
+from .Quadric import *
 
 class Sphere(Quadric):
     def __init__(self, material, position, radius):

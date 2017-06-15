@@ -1,16 +1,19 @@
-from .Vector import Vector
+from .Vector import *
 
 class Ray:
     def __init__(self, origin, direction):
         self.ori = origin
         self.dir = direction.unit()
-        self.inv = [1 / d for d in direction.xyz]
+        self.inv = [1 / d for d in self.dir.xyz]
 
     def __repr__(self):
         return "Origin: %s, Direction: %s" % (self.ori, self.dir)
 
     def __str__(self):
         return "o: %s, d: %s" % (self.ori, self.dir)
+
+    def traverse(self, dist):
+        return self.ori + self.dir * dist
 
     def reflect(self, across, tolerance=0.000001):
         return Ray(across.origin, reflect()) * tolerance

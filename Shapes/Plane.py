@@ -1,4 +1,4 @@
-from .Shape import Shape
+from .Shape import *
 
 class Plane(Shape):
     def __init__(self, material, position, normal):
@@ -19,6 +19,6 @@ class Plane(Shape):
         if dist < frustum[0] and dist > frustum[1]:
             return None
 
-        intersect = (ray * dist).ori
+        intersect = ray.traverse(dist)
 
         return (dist, intersect, self.nor, self.mat)

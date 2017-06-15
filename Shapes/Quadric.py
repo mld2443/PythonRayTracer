@@ -1,5 +1,5 @@
-from .Shape import Shape
-from Utility.Ray import Ray
+from .Shape import *
+from .Ray import *
 
 class Quadric(Shape):
     """
@@ -71,7 +71,7 @@ class Quadric(Shape):
         if dist is None:
             return None
 
-        intersect = (ray * dist).ori
+        intersect = ray.traverse(dist)
         normal = self._get_normal(intersect)
 
         return (dist, intersect, normal, self.mat)
