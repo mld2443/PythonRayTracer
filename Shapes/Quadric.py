@@ -22,48 +22,48 @@ class Quadric(Shape):
 
     def __calculate_intersection(self, ray, frustum):
         # Calculate the positions of the camera and the ray relative to the quadric
-		rCam = ray.ori - self.pos
-		rRay = ray.d
+        rCam = ray.ori - self.pos
+        rRay = ray.dir
 
-		# Precalculate these values for our quadratic equation
+        # Precalculate these values for our quadratic equation
         ABC = Vector(self.equ[0:2])
         DEF = Vector(self.equ[3:5])
         GHJ = Vector(self.equ[6:8])
 
-		V1 = rRay * rRay
-		V2 = Vector([rRay.x * rRay.y, rRay.y * rRay.z, rRay.x * rRay.z]) * 2
-		V3 = rCam * rRay
-		V4 = Vector([rRay.x * rCam.y + rCam.x * rRay.y, rCam.y * rRay.z + rRay.y * rCam.z, rCam.x * rRay.z + rRay.x * rCam.z])
-		V5 = rRay
-		V6 = rCam * rCam
-		V7 = Vector([rCam.x * rCam.y, rCam.y * rCam.z, rCam.x * rCam.z]) * 2
-		V8 = rCam * 2
+        V1 = rRay * rRay
+        V2 = Vector([rRay.x * rRay.y, rRay.y * rRay.z, rRay.x * rRay.z]) * 2
+        V3 = rCam * rRay
+        V4 = Vector([rRay.x * rCam.y + rCam.x * rRay.y, rCam.y * rRay.z + rRay.y * rCam.z, rCam.x * rRay.z + rRay.x * rCam.z])
+        V5 = rRay
+        V6 = rCam * rCam
+        V7 = Vector([rCam.x * rCam.y, rCam.y * rCam.z, rCam.x * rCam.z]) * 2
+        V8 = rCam * 2
 
-		# Calculate the quadratic coefficients
-		A = ABC * V1 + DEF * V2
-		B = ABC * V3 + DEF * V4 + GHI * V5
-		C = ABC * V6 + DEF * V7 + GHI * V8 + self.equ[9]
+        # Calculate the quadratic coefficients
+        A = ABC * V1 + DEF * V2
+        B = ABC * V3 + DEF * V4 + GHI * V5
+        C = ABC * V6 + DEF * V7 + GHI * V8 + self.equ[9]
 
-		# Calculate the squared value for our quadratic formula
-		square = B**2 - A * C
+        # Calculate the squared value for our quadratic formula
+        square = B**2 - A * C
 
-		# No collision if the root is imaginary
-		if square < 0:
-			return None
+        # No collision if the root is imaginary
+        if square < 0:
+            return None
 
-		# Take its squareroot if it's real
-		root = sqrt(square)
+        # Take its squareroot if it's real
+        root = square**0.5
 
-		# Calculate both intersections
-		D1 = (-B - root)/A
-		D2 = (-B + root)/A
+        # Calculate both intersections
+        D1 = (-B - root)/A
+        D2 = (-B + root)/A
 
-		# Return closest intersection thats in the frustum
-		if frustum[0] <= D1 <= frustum[1]:
-			return D1
-		elif frustum[0] <= D2 <= frustum[1]:
-			return D2
-		return None
+        # Return closest intersection thats in the frustum
+        if frustum[0] <= D1 <= frustum[1]:
+            return D1
+        elif frustum[0] <= D2 <= frustum[1]:
+            return D2
+        return None
 
     def intersect_ray(self, ray, frustum):
         dist = self.__calculate_intersection(ray, frustum)
@@ -72,6 +72,6 @@ class Quadric(Shape):
             return None
 
         intersect = (ray * dist).ori
-        normal = self.__get_normal(intersect)
+        normal = self._get_normal(intersect)
 
         return (dist, intersect, normal, self.mat)
