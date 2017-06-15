@@ -31,12 +31,12 @@ class Quadric(Shape):
         GHJ = Vector(self.equ[6:8])
 
         V1 = rRay * rRay
-        V2 = Vector([rRay.x * rRay.y, rRay.y * rRay.z, rRay.x * rRay.z]) * 2
+        V2 = Vector([rRay[0] * rRay[1], rRay[1] * rRay[2], rRay[2] * rRay[0]]) * 2
         V3 = rCam * rRay
-        V4 = Vector([rRay.x * rCam.y + rCam.x * rRay.y, rCam.y * rRay.z + rRay.y * rCam.z, rCam.x * rRay.z + rRay.x * rCam.z])
+        V4 = Vector([rRay[0] * rCam[1] + rCam[0] * rRay[1], rCam[1] * rRay[2] + rRay[1] * rCam[2], rCam[0] * rRay[2] + rRay[0] * rCam[2]])
         V5 = rRay
         V6 = rCam * rCam
-        V7 = Vector([rCam.x * rCam.y, rCam.y * rCam.z, rCam.x * rCam.z]) * 2
+        V7 = Vector([rCam[0] * rCam[1], rCam[1] * rCam[2], rCam[0] * rCam[2]]) * 2
         V8 = rCam * 2
 
         # Calculate the quadratic coefficients
