@@ -1,7 +1,7 @@
 from abc import ABCMeta, abstractmethod
 
 class Shape:
-    """A shape is an object that can be intersected"""
+    """A shape is an object that can be intersected by a ray"""
 
     __metaclass__ = ABCMeta
 
