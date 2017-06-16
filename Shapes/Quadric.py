@@ -28,7 +28,7 @@ class Quadric(Shape):
         # Precalculate these values for our quadratic equation
         ABC = Vector(self.equ[0:2])
         DEF = Vector(self.equ[3:5])
-        GHJ = Vector(self.equ[6:8])
+        GHI = Vector(self.equ[6:8])
 
         V1 = rRay * rRay
         V2 = Vector([rRay[0] * rRay[1], rRay[1] * rRay[2], rRay[2] * rRay[0]]) * 2
@@ -74,4 +74,4 @@ class Quadric(Shape):
         intersect = ray.traverse(dist)
         normal = self._get_normal(intersect)
 
-        return (dist, intersect, normal, self.mat)
+        return Intersection(dist, intersect, normal, self.mat)

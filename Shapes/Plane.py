@@ -21,4 +21,4 @@ class Plane(Shape):
 
         intersect = ray.traverse(dist)
 
-        return (dist, intersect, self.nor, self.mat)
+        return Intersection(dist, intersect, self.nor, self.mat)

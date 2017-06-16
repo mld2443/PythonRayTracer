@@ -9,3 +9,10 @@ class Shape:
     def intersect_ray(self, ray, frustum):
         # Must include a way for the shape to calculate ray intersection
         pass
+
+class Intersection(object):
+    def __init__(self, distance, point, normal, material):
+        self.distance = distance
+        self.point = point
+        self.normal = normal
+        self.material = material
