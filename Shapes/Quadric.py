@@ -40,9 +40,9 @@ class Quadric(Shape):
         V8 = rCam * 2
 
         # Calculate the quadratic coefficients
-        A = ABC.dot(V1) + DEF.dot(V2)
-        B = ABC.dot(V3) + DEF.dot(V4) + GHI.dot(V5)
-        C = ABC.dot(V6) + DEF.dot(V7) + GHI.dot(V8) + self.equ[9]
+        A = dot(ABC, V1) + dot(DEF, V2)
+        B = dot(ABC, V3) + dot(DEF, V4) + dot(GHI, V5)
+        C = dot(ABC, V6) + dot(DEF, V7) + dot(GHI, V8) + self.equ[9]
 
         # Calculate the squared value for our quadratic formula
         square = B**2 - A * C

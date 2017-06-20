@@ -19,20 +19,6 @@ class Vector:
 		mag = self.mag()
 		return Vector([x/mag for x in self.xyz])
 
-	def dot(self, rhs):
-		# Dot-product
-		if isinstance(rhs, Vector):
-			return sum(map(mul, self.xyz, rhs.xyz))
-		return NotImplemented
-
-	def cross(self, rhs):
-		# Cross-product
-		if isinstance(rhs, Vector):
-			return Vector([self[1]*rhs[2] - self[2]*rhs[1],
-        	 self.xyz[2]*rhs[0] - self[0]*rhs[2],
-        	 self.xyz[0]*rhs[1] - self[1]*rhs[0]])
-		return NotImplemented
-
 	def __add__(self, rhs):
 		if isinstance(rhs, Vector):
 			return Vector(list(map(sum, zip(self.xyz, rhs.xyz))))
@@ -62,6 +48,20 @@ def rand_unit_vector():
 	return Vector([gauss(0, 1) for i in range(3)]).unit()
 
 #MARK: Linear algebra functions
+
+def dot(lhs, rhs):
+	# Dot-product
+	if isinstance(rhs, Vector):
+		return sum(map(mul, lhs.xyz, rhs.xyz))
+	return NotImplemented
+
+def cross(lhs, rhs):
+	# Cross-product
+	if isinstance(rhs, Vector):
+		return Vector([lhs[1]*rhs[2] - lhs[2]*rhs[1],
+    	 lhs.xyz[2]*rhs[0] - lhs[0]*rhs[2],
+    	 lhs.xyz[0]*rhs[1] - lhs[1]*rhs[0]])
+	return NotImplemented
 
 def reflect(dir, normal):
     """Reflect a vector across a surface,

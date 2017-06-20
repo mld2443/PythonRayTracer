@@ -11,4 +11,4 @@ class Metallic(Material)
         bounce = Ray(intersect.point, reflected + fuzz * rand_unit_vector())
         color = self.color
 
-        return (bounce.dir.dot(intersect.normal)) > 0, color, bounce
+        return dot(bounce.dir, intersect.normal) > 0, self.color, bounce
