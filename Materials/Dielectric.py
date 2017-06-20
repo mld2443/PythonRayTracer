@@ -1,12 +1,12 @@
 from .Material import *
 import random
 
-class Dielectric(Material)
+class Dielectric(Material):
     def __init__(color, refr_index):
         self.color = color
         self.refr_index = refr_index
 
-    def scatter(incoming, intersect, scene, color, bounce):
+    def scatter(self, incoming, intersect, scene, color, bounce):
         reflect_prob = 1.0
         cosine = 1.0
         eta = 1.0
@@ -36,6 +36,6 @@ class Dielectric(Material)
         if random.uniform(0,1) < reflect_prob:
             bounce = Ray(intersect.point, reflected)
         else:
-			bounce = Ray(intersect.point, refracted)
+            bounce = Ray(intersect.point, refracted)
 
-		return True, self.color, bounce
+        return True, self.color, bounce

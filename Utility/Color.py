@@ -21,13 +21,13 @@ class Color:
 
 #MARK: Named color defenitions
 
-black = Color(0,0,0)
+black = Color(0.0,0.0,0.0)
 darkgrey = Color(0.3,0.3,0.3)
 lightgrey = Color(0.7,0.7,0.7)
-white = Color(1,1,1)
-red = Color(1,0,0)
-green = Color(0,1,0)
-blue = Color(0,0,1)
-yellow = Color(1,1,0)
-magenta = Color(1,0,1)
-cyan = Color(0,1,1)
+white = Color(1.0,1.0,1.0)
+red = Color(1.0,0.0,0.0)
+green = Color(0.0,1.0,0.0)
+blue = Color(0.0,0.0,1.0)
+yellow = Color(1.0,1.0,0.0)
+magenta = Color(1.0,0.0,1.0)
+cyan = Color(0.0,1.0,1.0)

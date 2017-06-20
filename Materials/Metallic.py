@@ -1,11 +1,11 @@
 from .Material import *
 
-class Metallic(Material)
+class Metallic(Material):
     def __init__(color, fuzz):
         self.color = color
         self.fuzz = fuzz
 
-	def scatter(incoming, intersect, scene, color, bounce):
+    def scatter(self, incoming, intersect, scene, color, bounce):
         reflected = reflect(incoming.direction, intersect.normal)
 
         bounce = Ray(intersect.point, reflected + fuzz * rand_unit_vector())

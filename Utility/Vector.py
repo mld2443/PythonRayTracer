@@ -70,6 +70,6 @@ def reflect(dir, normal):
 def refract(dir, normal, eta):
 	# Refract a vector on surface with normal and eta of refraction index ratio
 	uv = dir.unit()
-    dt = dot(uv, normal)
-    discriminant = 1.0 - (eta ** 2) * (1.0 - (dt ** 2))
-    return (uv - normal * dt) * eta - normal * discriminant**0.5 if discriminant > 0 else None
+	dt = dot(uv, normal)
+	discriminant = 1.0 - (eta ** 2) * (1.0 - (dt ** 2))
+	return (uv - normal * dt) * eta - normal * discriminant**0.5 if discriminant > 0 else None

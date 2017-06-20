@@ -1,3 +1,4 @@
+from abc import ABCMeta, abstractmethod
 from Utility.Vector import *
 
 class Material(object):
@@ -8,7 +9,7 @@ class Material(object):
     __metaclass__ = ABCMeta
 
     @abstractmethod
-    def scatter():
+    def scatter(self, incoming, intersect, scene, color, bounce):
         # Must define how to scatter incoming rays
         pass
 
