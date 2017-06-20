@@ -6,4 +6,4 @@ class Sphere(Quadric):
 
     def _get_normal(self, point):
         # Override Quadric's normal function with this faster calculation
-        return (point - self.pos).unit()
+        return (point - self.position).unit()

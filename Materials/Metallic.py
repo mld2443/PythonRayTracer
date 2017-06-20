@@ -6,9 +6,9 @@ class Metallic(Material)
         self.fuzz = fuzz
 
 	def scatter(incoming, intersect, scene, color, bounce):
-        reflected = reflect(incoming.dir, intersect.normal)
+        reflected = reflect(incoming.direction, intersect.normal)
 
         bounce = Ray(intersect.point, reflected + fuzz * rand_unit_vector())
         color = self.color
 
-        return dot(bounce.dir, intersect.normal) > 0, self.color, bounce
+        return dot(bounce.direction, intersect.normal) > 0, self.color, bounce

@@ -2,23 +2,21 @@ from .Shape import *
 
 class Plane(Shape):
     def __init__(self, material, position, normal):
-        self.mat = material
-        self.pos = position
-        self.nor = normal.unit()
+        self.material = material
+        self.position = position
+        self.normal = normal.unit()
         # Constant value so we don't calculate it every time
-        self.n_p = dot(self.nor, self.pos)
+        self.n_dot_p = dot(self.nor, self.pos)
 
     def intersect_ray(self, ray, frustum):
-        denominator = dot(self.nor, ray.dir)
+        denominator = dot(self.normal, ray.direction)
 
-        if denominator == 0.0
+        if denominator is 0.0:
             return None
 
-        dist = (self.n_p - dot(self.nor, ray.ori)) / denominator
+        distance = (self.n_dot_p - dot(self.normal, ray.origin)) / denominator
 
-        if dist < frustum[0] and dist > frustum[1]:
+        if distance < frustum[0] and distance > frustum[1]:
             return None
 
-        intersect = ray.traverse(dist)
-
-        return Intersection(dist, intersect, self.nor, self.mat)
+        return Intersection(distance, ray.traverse(distance), self.normal, self.material)
