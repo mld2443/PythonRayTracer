@@ -1,11 +1,49 @@
-from .Shape import *
-from Utility.Ray import *
+from abc import ABCMeta, abstractmethod
+from Utility.Vector import *
+
+class Shape(object):
+    """A shape is an object that can be intersected by a ray"""
+
+    __metaclass__ = ABCMeta
+
+    @abstractmethod
+    def intersect_ray(self, ray, frustum):
+        # Must include a way for the shape to calculate ray intersection
+        pass
+
+class Intersection(object):
+    def __init__(self, distance, point, normal, material):
+        self.distance = distance
+        self.point = point
+        self.normal = normal
+        self.material = material
+
+class Plane(Shape):
+    """Simple flat infinite plane defined by the plane equation"""
+
+    def __init__(self, material, position, normal):
+        self.material = material
+        self.position = position
+        self.normal = normal.unit()
+        # Constant value so we don't calculate it every time
+        self.n_dot_p = dot(self.normal, self.position)
+
+    def intersect_ray(self, ray, frustum):
+        denominator = dot(self.normal, ray.direction)
+
+        if denominator is 0.0:
+            return None
+
+        distance = (self.n_dot_p - dot(self.normal, ray.origin)) / denominator
+
+        if distance < frustum[0] and distance > frustum[1]:
+            return None
+
+        return Intersection(distance, ray.traverse(distance), self.normal, self.material)
 
 class Quadric(Shape):
-    """
-    A Quadric is a shape described by a 2nd degree polynomial of the form:
-        Ax² + By² + Cz² + 2Dyz + 2Exz + 2Fxy + 2Gx + 2Hy + 2Iz + J = 0
-    """
+    """A Quadric is a shape described by a 2nd degree polynomial of the form:
+        Ax² + By² + Cz² + 2Dyz + 2Exz + 2Fxy + 2Gx + 2Hy + 2Iz + J = 0"""
 
     def __init__(self, material, position, equation):
         self.material = material
@@ -75,3 +113,13 @@ class Quadric(Shape):
         normal = self._get_normal(intersect)
 
         return Intersection(distance, intersect, normal, self.material)
+
+class Sphere(Quadric):
+    """Redefinition of spheres to override the normal function for a simpler one"""
+
+    def __init__(self, material, position, radius):
+        super().__init__(material, position, [1,1,1,0,0,0,0,0,0,-(radius**2)])
+
+    def _get_normal(self, point):
+        # Override Quadric's normal function with this faster calculation
+        return (point - self.position).unit()
