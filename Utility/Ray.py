@@ -5,8 +5,6 @@ class Ray:
     def __init__(self, origin, direction):
         self.ori = origin
         self.dir = direction.unit()
-        #TODO: I can't remember why I put this here
-        #self.inv = [1 / d for d in self.dir.xyz]
 
     def traverse(self, dist):
         # Returns a point 'dist' units away from origin in direction

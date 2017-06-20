@@ -1,3 +1,5 @@
+from Utility.Vector import *
+
 class Material(object):
     """Class to contain all the properties
         of how light interacts with a material

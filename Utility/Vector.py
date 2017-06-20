@@ -64,12 +64,12 @@ def cross(lhs, rhs):
 	return NotImplemented
 
 def reflect(dir, normal):
-    """Reflect a vector across a surface,
-    assumes dir and normal are unit vectors"""
-    return (dir - normal * (2 * dir.dot(normal))).unit()
+    # Reflect a vector across a surface, assumes dir and normal are unit vectors
+    return (dir - normal * (2 * dot(dir, normal))).unit()
 
-def refract(dir, normal):
-	"""refract a vector on surface with normal
-	and eta of refraction index ratio"""
-	#TODO Implement this function
-	return dir
+def refract(dir, normal, eta):
+	# Refract a vector on surface with normal and eta of refraction index ratio
+	uv = dir.unit()
+    dt = dot(uv, normal)
+    discriminant = 1.0 - (eta ** 2) * (1.0 - (dt ** 2))
+    return (uv - normal * dt) * eta - normal * discriminant**0.5 if discriminant > 0 else None
