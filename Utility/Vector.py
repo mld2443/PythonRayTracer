@@ -69,11 +69,11 @@ def refract(direction, normal, eta):
 
 #MARK: rays
 
-class Ray(namedtuple('Ray', 'origin direction')):
+class Ray(object):
     """A class that holds all our rays with which we trace"""
     def __init__(self, origin, direction):
-        self.origin = origin
-        self.direction = direction.unit()
+        self.origin = Vector._make(origin)
+        self.direction = Vector._make(direction).unit()
 
     def traverse(self, distance):
         # Returns a point 'distance' units away from origin in direction

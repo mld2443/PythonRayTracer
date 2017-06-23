@@ -12,6 +12,7 @@ class Shape(object):
         # Must include a way for the shape to calculate ray intersection
         pass
 
+Frustum = namedtuple('Frustum', 'near far')
 Intersection = namedtuple('Intersection', 'distance point normal material')
 
 class Plane(Shape):
@@ -19,8 +20,8 @@ class Plane(Shape):
 
     def __init__(self, material, position, normal):
         self.material = material
-        self.position = position
-        self.normal = normal.unit()
+        self.position = Vector._make(position)
+        self.normal = Vector._make(normal).unit()
         # Constant value so we don't calculate it every time
         self.n_dot_p = dot(self.normal, self.position)
 
@@ -32,10 +33,11 @@ class Plane(Shape):
 
         distance = (self.n_dot_p - dot(self.normal, ray.origin)) / denominator
 
-        if distance < frustum[0] and distance > frustum[1]:
-            return None
+        if frustum.near <= distance <= frustum.far:
+            return Intersection(distance, ray.traverse(distance), self.normal, self.material)
+        return None
 
-        return Intersection(distance, ray.traverse(distance), self.normal, self.material)
+Equation = namedtuple('Equation', 'A B C D E F G H I J')
 
 class Quadric(Shape):
     """A Quadric is a shape described by a 2nd degree polynomial of the form:
@@ -43,34 +45,34 @@ class Quadric(Shape):
 
     def __init__(self, material, position, equation):
         self.material = material
-        self.position = position
-        self.equation = equation
+        self.position = Vector._make(position)
+        self.equation = Equation._make(equation)
         # Prepare ABC, DEF, and GHI vectors per the equation
-        self.ABC = Vector(self.equation[0:2])
-        self.DEF = Vector(self.equation[3:5])
-        self.GHI = Vector(self.equation[6:8])
+        self.ABC = Vector._make(self.equation[0:3])
+        self.DEF = Vector._make(self.equation[3:6])
+        self.GHI = Vector._make(self.equation[6:9])
 
     def _get_normal(self, point):
         relative = point - self.position
         # Compute the generic derivative of the equation at given point
-        x = 2 * self.equation[0] * relative[0] + self.equation[4] * relative[2] + self.equation[5] * relative[1] + self.equation[6]
-        y = 2 * self.equation[1] * relative[1] + self.equation[3] * relative[2] + self.equation[5] * relative[0] + self.equation[7]
-        z = 2 * self.equation[2] * relative[2] + self.equation[3] * relative[1] + self.equation[4] * relative[0] + self.equation[8]
-        return Vector([x,y,z]).unit()
+        x = 2 * self.equation.A * relative.x + self.equation.E * relative.z + self.equation.F * relative.y + self.equation.G
+        y = 2 * self.equation.B * relative.y + self.equation.D * relative.z + self.equation.F * relative.x + self.equation.H
+        z = 2 * self.equation.C * relative.z + self.equation.D * relative.y + self.equation.E * relative.x + self.equation.I
+        return Vector(x,y,z).unit()
 
     def __calculate_intersection(self, ray, frustum):
         # Calculate the positions of the camera and the ray relative to the quadric
         rCam = ray.origin - self.position
-        rRay = ray.dirgin
+        rRay = ray.direction
 
         # Precalculate these values for our quadratic equation
         V1 = rRay * rRay
-        V2 = Vector([rRay[0] * rRay[1], rRay[1] * rRay[2], rRay[2] * rRay[0]]) * 2
+        V2 = Vector(rRay.x * rRay.y, rRay.y * rRay.z, rRay.z * rRay.x) * 2
         V3 = rCam * rRay
-        V4 = Vector([rRay[0] * rCam[1] + rCam[0] * rRay[1], rCam[1] * rRay[2] + rRay[1] * rCam[2], rCam[0] * rRay[2] + rRay[0] * rCam[2]])
+        V4 = Vector(rRay.x * rCam.y + rCam.x * rRay.y, rCam.y * rRay.z + rRay.y * rCam.z, rCam.x * rRay.z + rRay.x * rCam.z)
         V5 = rRay
         V6 = rCam * rCam
-        V7 = Vector([rCam[0] * rCam[1], rCam[1] * rCam[2], rCam[0] * rCam[2]]) * 2
+        V7 = Vector(rCam.x * rCam.y, rCam.y * rCam.z, rCam.z * rCam.x) * 2
         V8 = rCam * 2
 
         # Calculate the quadratic coefficients
@@ -93,9 +95,9 @@ class Quadric(Shape):
         D2 = (-B + root) / A
 
         # Return closest intersection thats in the frustum
-        if frustum[0] <= D1 <= frustum[1]:
+        if frustum.near <= D1 <= frustum.far:
             return D1
-        elif frustum[0] <= D2 <= frustum[1]:
+        elif frustum.near <= D2 <= frustum.far:
             return D2
         return None
 
@@ -114,7 +116,7 @@ class Sphere(Quadric):
     """Redefinition of spheres to override the normal function for a simpler one"""
 
     def __init__(self, material, position, radius):
-        super().__init__(material, position, [1,1,1,0,0,0,0,0,0,-(radius**2)])
+        super().__init__(material, position, (1,1,1,0,0,0,0,0,0,-(radius**2)))
 
     def _get_normal(self, point):
         # Override Quadric's normal function with this faster calculation
