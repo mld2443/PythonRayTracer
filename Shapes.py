@@ -1,4 +1,5 @@
 from abc import ABCMeta, abstractmethod
+from collections import namedtuple
 from Utility.Vector import *
 
 class Shape(object):
@@ -11,12 +12,7 @@ class Shape(object):
         # Must include a way for the shape to calculate ray intersection
         pass
 
-class Intersection(object):
-    def __init__(self, distance, point, normal, material):
-        self.distance = distance
-        self.point = point
-        self.normal = normal
-        self.material = material
+Intersection = namedtuple('Intersection', 'distance point normal material')
 
 class Plane(Shape):
     """Simple flat infinite plane defined by the plane equation"""
