@@ -41,8 +41,6 @@ class Vector(namedtuple('Point', 'x y z')):
 def rand_unit_vector():
 	return Vector._make([gauss(0, 1) for i in range(3)]).unit()
 
-#MARK: Linear algebra functions
-
 def dot(lhs, rhs):
 	# Dot-product
 	if isinstance(lhs and rhs, Vector):
@@ -67,3 +65,16 @@ def refract(direction, normal, eta):
 	dt = dot(direction, normal)
 	discriminant = 1.0 - eta ** 2 * (1.0 - dt ** 2)
 	return (direction - normal * dt) * eta - normal * discriminant**0.5 if discriminant > 0 else None
+
+
+#MARK: rays
+
+class Ray(namedtuple('Ray', 'origin direction')):
+    """A class that holds all our rays with which we trace"""
+    def __init__(self, origin, direction):
+        self.origin = origin
+        self.direction = direction.unit()
+
+    def traverse(self, distance):
+        # Returns a point 'distance' units away from origin in direction
+        return self.origin + self.direction * distance
