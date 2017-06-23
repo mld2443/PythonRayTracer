@@ -19,4 +19,4 @@ sphere4 = Sphere(matte_white, Vector([19,19,18]), 18)
 scene = [floor, sphere1, sphere2, sphere3, sphere4]
 
 # Build a camera obscura
-#camera = Camera(newCamPos, lookDir: newCamLook, FOV: 95.0)
+camera = (Vector([0,-15,8]), Vector([0,-14,8]), 95.0)
