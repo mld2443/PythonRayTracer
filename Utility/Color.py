@@ -3,6 +3,15 @@ from collections import namedtuple
 class Color(namedtuple('Color', 'r g b')):
     """A class that holds RGB values with floating point precision"""
 
+    def apply_transform(self, func):
+        return Color._make(map(func, self))
+
+    def __add__(self, rhs):
+        return Color(self.r+rhs.r, self.g+rhs.g, self.b+rhs.b) if isinstance(rhs, Color) else NotImplemented
+
+    def __mul__(self, rhs):
+        return Color(self.r*rhs, self.g*rhs, self.b*rhs) if isinstance(rhs, (int, float)) else NotImplemented
+
     def __str__(self):
         return '{:02X}{:02X}{:02X}'.format(int(255*self[0]), int(255*self[1]), int(255*self[2]))
 
