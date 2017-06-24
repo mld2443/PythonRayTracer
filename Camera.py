@@ -3,13 +3,12 @@ from math import radians, atan, sqrt
 from random import uniform
 from Utility.Vector import *
 from Utility.Color import *
-import Shapes
+from Shapes import *
 
-Camera = namedtuple('Camera', 'position direction width height FOV')
+Camera = namedtuple('Camera', 'position direction up width height FOV')
 
 # Global settings
 scene_refraction_index = 1.0
-up = Vector(0,0,1)
 
 def capture(camera, scene, sampling, depth):
     # calculate the screen dimensions given the FOV
@@ -31,8 +30,8 @@ def capture(camera, scene, sampling, depth):
     pixels = []
 
     # Build the image one pixel at a time
-    for y in range(camera.height)
-        for x in range(camera.width)
+    for y in range(camera.height):
+        for x in range(camera.width):
             pixel_position = top_left + x * deltaX - y * deltaY
             pixels[y][x] = get_pixel(scene, pixel_position, (deltaY, deltaY), depth)
 
@@ -66,7 +65,8 @@ def get_pixel(scene, position, samples, pixel_size, depth):
 
 def trace(ray, scene, depth):
     # Base case; try changing the color and seeing what you get!
-    return black if depth <= 0
+    if depth <= 0:
+        return black
 
     # check to see if our ray hits an object, or just shoots into space
     intersect = cast_ray(scene, ray, frustrum)
@@ -95,7 +95,7 @@ def cast_ray(ray, scene, frustum):
     closest = None
 
     for shape in scene:
-        intersect = shape.intersect_ray(ray, (frustrum.near, (closest.dist if closest else frustum.far)))
+        intersect = shape.intersect_ray(ray, Frustum(frustum.near, (closest.dist if closest else frustum.far)))
         if intersect:
             closest = intersect
 

@@ -8,8 +8,7 @@ class Color(namedtuple('Color', 'r g b')):
         return Color._make(map(func, self))
 
     def quantize(self):
-        q = lambda x: return min(max(int(255*x),0),255)
-        return Color._make(map(q, self))
+        return self.apply_transform(lambda x: min(max(int(255*x),0),255))
 
     def __add__(self, rhs):
         return Color(self.r+rhs.r, self.g+rhs.g, self.b+rhs.b) if isinstance(rhs, Color) else NotImplemented
@@ -19,9 +18,6 @@ class Color(namedtuple('Color', 'r g b')):
 
     def __str__(self):
         return '{:02X}{:02X}{:02X}'.format(int(255*self.r), int(255*self.g), int(255*self.b))
-
-    def __repr__(self):
-        return "0x" + self.__str__()
 
 #MARK: Named color defenitions
 
