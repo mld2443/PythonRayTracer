@@ -1,35 +1,38 @@
-from math import radians, atan
 from collections import namedtuple
+from math import radians, atan, sqrt
+from Utility.Vector import *
+from Utility.Color import *
 
-Dimensions = namedtuple('Dimensions', 'w h')
+Camera = namedtuple('Camera', 'position direction width height FOV')
 
-def capture(camera, scene, dimensions, sampling, depth = 5):
+def capture(camera, scene, sampling, depth, up = Vector(0,0,1)):
     # calculate the screen dimensions given the FOV
-    screen_width = atan(radians(FOV / 2.0))
-    screen_height = (float(dimensions.h) / float(dimensions.w)) * screen_width
+    screen_width = atan(radians(camera.FOV / 2.0))
+    screen_height = (float(camera.height) / float(camera.width)) * screen_width
 
     # calculate the coordinate frame for screenspace
-    X₀ = cross(lookDirection, upDirection).unit
-    Y₀ = cross(lookDirection, X₀).unit
+    i_hat = cross(camera.direction, up).unit()
+    j_hat = cross(i_hat, camera.direction).unit()
 
-    # compute the average width of a pixel represented in screenspace
-    ∆X = (2.0 * screen_width * X₀) / float(dimensions.w)
-    ∆Y = (2.0 * screen_height * Y₀) / float(dimensions.h)
+    # compute the dimensions of a pixel represented in screenspace
+    deltaX = i_hat * (2 * screen_width / camera.width)
+    deltaY = j_hat * (2 * screen_height / camera.height)
 
     # grab the top left of the screenspace as the starting point for our image
-    top_left = position + look_direction - (X₀ * screen_width) - (Y₀ * screen_height)
+    top_left = camera.position + camera.direction - (i_hat * screen_width) + (j_hat * screen_height)
 
     # create the empty pixel array to convert to an image
     pixels = []
 
-    for y in range(dimensions.h)
-        for x in range(dimensions.w)
-            pixel_position = top_left + x * ∆X + y * ∆Y
-            pixels[y][x] = get_pixel(scene, pixel_position, sampling, (∆X, ∆Y), depth)
+    for y in range(camera.height)
+        for x in range(camera.width)
+            pixel_position = top_left + x * deltaX - y * deltaY
+            pixels[y][x] = get_pixel(scene, pixel_position, (deltaY, deltaY), depth)
 
-    return image_from_pixels(pixels, dimensions)
+    return image_from_pixels(pixels, (camera.width, camera.height))
 
-def get_pixel(scene, position, sampling, dims, depth):
-    return Color(1.0,1.0,1.0)
+def get_pixel(scene, position, samples, pixel_size, depth):
+    pixel = black
 
-def image_from_pixels(pixels, dimensions):
+    # collect samples of the scene for this current pixel
+    return pixel
