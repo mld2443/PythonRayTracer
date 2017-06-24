@@ -8,6 +8,7 @@ class Color(namedtuple('Color', 'r g b')):
         return Color._make(map(func, self))
 
     def quantize(self):
+        # Convert from floating point to 8-bit values for each color channel
         return self.apply_transform(lambda x: min(max(int(255*x),0),255))
 
     def __add__(self, rhs):
@@ -32,5 +33,9 @@ yellow = Color(1.0,1.0,0.0)
 magenta = Color(1.0,0.0,1.0)
 cyan = Color(0.0,1.0,1.0)
 
+#MARK: PIL implementation
+
 def image_from_pixels(pixels, dimensions):
+    # This would be a good place to do any post-processing on our image
+    # PIL in python 3 uses the Pillow library
     return Image.new('RGB', dimensions, green.quantize())

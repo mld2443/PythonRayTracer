@@ -13,7 +13,17 @@ This project is designed for use with Python 3. The Supercomputer requires you f
 
 1. `module load Python/3.5.2-intel-2017A`
   * this is case sensitive
-2. navigate to your preferred working directory and clone: `git clone https://github.com/mld2443/PythonRayTracer`
-3. `cd PythonRayTracer`
-4. `./Tracer.py --resolution 320x240 --samples 10 --depth 4 --seed 0`
+2. `module load myPython/3.5.2-intel-2017A`
+  * If this is your first time ever loading this myPython module, please also execute the following:
+    1. `$MYCREATEVIRTENV`
+    2. `$MYACTIVATE`
+    3. `pip install Pillow`
+      * Pip may complain that it's not up to date. This shouldn't be a problem.
+    4. `$MYDEACTIVATE`
+  * After doing the above, your environment is saved, and your `$PYTHONPATH` should now be set. This will be remembered the next time you load the same `myPython` module.
+    * To check any of these `$` variables, type `echo` before them to see what they are.
+  * If you have any trouble with the Python virtual environments, [please see the HPRC wiki page](https://hprc.tamu.edu/wiki/index.php/SW:Python#User_installed_using_virtual_environments).
+3. navigate to your preferred working directory and clone: `git clone https://github.com/mld2443/PythonRayTracer`
+4. `cd PythonRayTracer`
+5. `./Tracer.py --resolution 320x240 --samples 10 --depth 4`
   * `./Tracer.py -h` will tell you about the available arguments

@@ -1,3 +1,12 @@
+#############
+# Shapes.py #
+#############
+# Here I define the mathematical defenitions of a Shape
+# For an exercise, you might try defining your
+# own shape, like a triangle.
+# For those looking to tinker, try messing with
+# shape normals for different effects.
+
 from abc import ABCMeta, abstractmethod
 from collections import namedtuple
 from Utility.Vector import *

@@ -1,3 +1,10 @@
+#############
+# Camera.py #
+#############
+# This is the proverbial sausage factory.
+# There are lots of things to play with in here
+# and I've tried to mark areas of interest
+
 from collections import namedtuple
 from math import radians, atan, sqrt
 from random import uniform
@@ -84,8 +91,7 @@ def trace(ray, scene, depth):
 # Sky gradient #
 ################
 # It's important this be bright, as it's the
-# source of much of the light of the scene,
-# Otherwise it's just for looks.
+# source of much of the light of the scene.
 def sky_gradient(direction):
     #TODO: Check how this looks with curve correction
     interpolate = (0.5 * (direction.y + 1)) #**0.5
