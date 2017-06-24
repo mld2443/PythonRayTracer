@@ -1,3 +1,4 @@
+from PIL import Image
 from collections import namedtuple
 
 class Color(namedtuple('Color', 'r g b')):
@@ -6,6 +7,10 @@ class Color(namedtuple('Color', 'r g b')):
     def apply_transform(self, func):
         return Color._make(map(func, self))
 
+    def quantize(self):
+        q = lambda x: return min(max(int(255*x),0),255)
+        return Color._make(map(q, self))
+
     def __add__(self, rhs):
         return Color(self.r+rhs.r, self.g+rhs.g, self.b+rhs.b) if isinstance(rhs, Color) else NotImplemented
 
@@ -13,7 +18,7 @@ class Color(namedtuple('Color', 'r g b')):
         return Color(self.r*rhs, self.g*rhs, self.b*rhs) if isinstance(rhs, (int, float)) else NotImplemented
 
     def __str__(self):
-        return '{:02X}{:02X}{:02X}'.format(int(255*self[0]), int(255*self[1]), int(255*self[2]))
+        return '{:02X}{:02X}{:02X}'.format(int(255*self.r), int(255*self.g), int(255*self.b))
 
     def __repr__(self):
         return "0x" + self.__str__()
@@ -30,3 +35,6 @@ blue = Color(0.0,0.0,1.0)
 yellow = Color(1.0,1.0,0.0)
 magenta = Color(1.0,0.0,1.0)
 cyan = Color(0.0,1.0,1.0)
+
+def image_from_pixels(pixels, dimensions):
+    return Image.new('RGB', dimensions, green.quantize())

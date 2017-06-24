@@ -7,7 +7,11 @@ import Shapes
 
 Camera = namedtuple('Camera', 'position direction width height FOV')
 
-def capture(camera, scene, sampling, depth, up = Vector(0,0,1)):
+# Global settings
+scene_refraction_index = 1.0
+up = Vector(0,0,1)
+
+def capture(camera, scene, sampling, depth):
     # calculate the screen dimensions given the FOV
     screen_width = atan(radians(camera.FOV / 2.0))
     screen_height = (float(camera.height) / float(camera.width)) * screen_width
@@ -51,33 +55,26 @@ def get_pixel(scene, position, samples, pixel_size, depth):
     pixel = pixel / samples
     #pixel = pixel.apply_transform(sqrt)
 
-    return pixel
+    return pixel.quantize()
 
 def trace(ray, scene, depth):
     return black if depth <= 0
 
-    #FIXME:
     intersect = cast_ray(scene, ray, frustrum)
     if intersect:
-        bounce = ray
-        color = black
+        color, bounce = intersect.material.scatter(ray, intersect, scene_refraction_index)
 
-        if intersect.material.scatter(ray, intersect: intersect, scene: scene, color: &color, bounce: &bounce) {
-            return color * trace(bounce, scene: scene, step: step + 1, maxDepth: maxDepth)
-        else:
-            return black
+        return color * trace(bounce, scene, depth - 1) if bounce else black
     else:
-        return sky_gradient(ray.direction.y)
+def sky_gradient(direction):
+    interpolate = (0.5 * (direction.y + 1)) #**0.5
+    return white * (1 - interpolate) + Color(0.5, 0.7, 1.0) * interpolate
 
-def sky_gradient(angle):
-    t = (0.5 * (angle + 1)) #**0.5
-    return white * (1 - t) + Color(0.5, 0.7, 1.0) * t
-
-def cast_ray(scene, ray, frustum):
+def cast_ray(ray, scene, frustum):
     closest = None
 
     for shape in scene:
-        intersect = shape.intersect_ray(ray, Frustum(frustrum.near, (closest.dist if closest else frustum.far)))
+        intersect = shape.intersect_ray(ray, (frustrum.near, (closest.dist if closest else frustum.far)))
         if intersect:
             closest = intersect
 

@@ -55,7 +55,7 @@ class Dielectric(Material):
         else:
             bounce = Ray(intersect.point, refracted)
 
-        return True, self.color, bounce
+        return self.color, bounce
 
 class Lambertian(Material):
     def __init__(self, color):
@@ -66,7 +66,7 @@ class Lambertian(Material):
 
         bounce = Ray(intersect.point, target - intersect.point)
 
-        return True, self.color, bounce
+        return self.color, bounce
 
 class Metallic(Material):
     def __init__(color, fuzz):
@@ -78,4 +78,4 @@ class Metallic(Material):
 
         bounce = Ray(intersect.point, reflected + fuzz * rand_unit_vector())
 
-        return dot(bounce.direction, intersect.normal) > 0, self.color, bounce
+        return self.color, bounce if dot(bounce.direction, intersect.normal) > 0 else None
