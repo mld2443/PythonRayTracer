@@ -1,7 +1,9 @@
 from collections import namedtuple
 from math import radians, atan, sqrt
+from random import uniform
 from Utility.Vector import *
 from Utility.Color import *
+import Shapes
 
 Camera = namedtuple('Camera', 'position direction width height FOV')
 
@@ -35,4 +37,48 @@ def get_pixel(scene, position, samples, pixel_size, depth):
     pixel = black
 
     # collect samples of the scene for this current pixel
+    for _ in range(samples):
+        # randomly generate offsets for the current subsample
+        random_offset = pixel_size[0] * uniform(0,1) - pixel_size[1] * uniform(0,1)
+
+        # get the subsample position and construct a ray from it
+        subsample = position + random_offset
+        ray = Ray(position, subsample - position)
+
+        pixel = pixel + trace(ray, scene, depth)
+
+    # Color correction
+    pixel = pixel / samples
+    #pixel = pixel.apply_transform(sqrt)
+
     return pixel
+
+def trace(ray, scene, depth):
+    return black if depth <= 0
+
+    #FIXME:
+    intersect = cast_ray(scene, ray, frustrum)
+    if intersect:
+        bounce = ray
+        color = black
+
+        if intersect.material.scatter(ray, intersect: intersect, scene: scene, color: &color, bounce: &bounce) {
+            return color * trace(bounce, scene: scene, step: step + 1, maxDepth: maxDepth)
+        else:
+            return black
+    else:
+        return sky_gradient(ray.direction.y)
+
+def sky_gradient(angle):
+    t = (0.5 * (angle + 1)) #**0.5
+    return white * (1 - t) + Color(0.5, 0.7, 1.0) * t
+
+def cast_ray(scene, ray, frustum):
+    closest = None
+
+    for shape in scene:
+        intersect = shape.intersect_ray(ray, Frustum(frustrum.near, (closest.dist if closest else frustum.far)))
+        if intersect:
+            closest = intersect
+
+    return closest
