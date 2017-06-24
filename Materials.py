@@ -8,7 +8,7 @@ class Material(object):
     __metaclass__ = ABCMeta
 
     @abstractmethod
-    def scatter(self, incoming, intersect, scene, color, bounce):
+    def scatter(self, incoming, intersect, refr_index):
         # Must define how to scatter incoming rays
         pass
 
@@ -23,7 +23,7 @@ class Dielectric(Material):
         self.color = color
         self.refr_index = refr_index
 
-    def scatter(self, incoming, intersect, scene, color, bounce):
+    def scatter(self, incoming, intersect, refr_index):
         reflect_prob = 1.0
         cosine = 1.0
         eta = 1.0
@@ -36,11 +36,11 @@ class Dielectric(Material):
         # Are we entering or exiting the object?
         if entering < 0:
             outward_normal = -intersect.normal
-            eta = refr_index / scene.refr_index
-            cosine = refr_index * entering
+            eta = self.refr_index / refr_index
+            cosine = self.refr_index * entering
         else:
             outward_normal = intersect.normal
-            eta = scene.refr_index / refr_index
+            eta = refr_index / self.refr_index
             cosine = -entering
 
         refracted = refract(incoming.direction, outward_normal, eta)
@@ -48,7 +48,7 @@ class Dielectric(Material):
         if refracted is None:
             bounce = Ray(intersect.point, reflected)
         else:
-            reflect_prob = schlick(cosine, refr_index)
+            reflect_prob = schlick(cosine, self.refr_index)
 
         if random.uniform(0,1) < reflect_prob:
             bounce = Ray(intersect.point, reflected)
@@ -61,7 +61,7 @@ class Lambertian(Material):
     def __init__(self, color):
         self.color = color
 
-    def scatter(self, incoming, intersect, scene, color, bounce):
+    def scatter(self, incoming, intersect, refr_index):
         target = intersect.point + intersect.normal + rand_unit_vector()
 
         bounce = Ray(intersect.point, target - intersect.point)
@@ -73,10 +73,9 @@ class Metallic(Material):
         self.color = color
         self.fuzz = fuzz
 
-    def scatter(self, incoming, intersect, scene, color, bounce):
+    def scatter(self, incoming, intersect, refr_index):
         reflected = reflect(incoming.direction, intersect.normal)
 
         bounce = Ray(intersect.point, reflected + fuzz * rand_unit_vector())
-        color = self.color
 
         return dot(bounce.direction, intersect.normal) > 0, self.color, bounce

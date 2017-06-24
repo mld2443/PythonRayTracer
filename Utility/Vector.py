@@ -43,16 +43,14 @@ def rand_unit_vector():
 
 def dot(lhs, rhs):
 	# Dot-product
-	if isinstance(lhs and rhs, Vector):
+	if isinstance(lhs, Vector) and isinstance(rhs, Vector):
 		return sum(map(mul, lhs, rhs))
 	return NotImplemented
 
 def cross(lhs, rhs):
 	# Cross-product
-	if isinstance(lhs and rhs, Vector):
-		return Vector(lhs.y * rhs.z - lhs.z * rhs.y,
-    	 lhs.z * rhs.x - lhs.x * rhs.z,
-    	 lhs.x * rhs.y - lhs.y * rhs.x)
+	if isinstance(lhs, Vector) and isinstance(rhs, Vector):
+		return Vector(lhs.y * rhs.z - lhs.z * rhs.y, lhs.z * rhs.x - lhs.x * rhs.z, lhs.x * rhs.y - lhs.y * rhs.x)
 	return NotImplemented
 
 def reflect(direction, normal):
