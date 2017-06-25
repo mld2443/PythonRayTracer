@@ -8,22 +8,21 @@
 from collections import namedtuple
 from math import radians, atan, sqrt
 from random import uniform
-from Utility.Vector import *
-from Utility.Color import *
-from Shapes import *
+from Utility.Vector import cross
+import Utility.Color as Color
 
 Camera = namedtuple('Camera', 'position direction up width height FOV')
 
 # Global settings
 scene_refraction_index = 1.0
+def capture(camera, scene, sampling, depth, verbose):
 
-def capture(camera, scene, sampling, depth):
     # calculate the screen dimensions given the FOV
     screen_width = atan(radians(camera.FOV / 2.0))
     screen_height = (float(camera.height) / float(camera.width)) * screen_width
 
     # calculate the coordinate frame for screenspace
-    i_hat = cross(camera.direction, up).unit()
+    i_hat = cross(camera.direction, camera.up).unit()
     j_hat = cross(i_hat, camera.direction).unit()
 
     # compute the dimensions of a pixel represented in screenspace
@@ -37,16 +36,20 @@ def capture(camera, scene, sampling, depth):
     pixels = []
 
     # Build the image one pixel at a time
-    #for y in range(camera.height):
-    #    for x in range(camera.width):
-    #        pixel_position = top_left + x * deltaX - y * deltaY
-    #        pixels[y][x] = get_pixel(scene, pixel_position, (deltaY, deltaY), depth)
+    for y in range(camera.height):
+        pixels.append([])
+        for x in range(camera.width):
+            x_red = float(x)/float(camera.width)
+            y_green = float(y)/float(camera.height)
+            pixels[y].append(Color.Color(x_red,y_green,0.5).quantize())
 
     # Convert our array from what is essentially a bitmap to an image
-    return image_from_pixels(pixels, (camera.width, camera.height))
+    image = Color.image_from_pixels(pixels, (camera.width, camera.height))
+
+    return image
 
 def get_pixel(scene, position, samples, pixel_size, depth):
-    pixel = black
+    pixel = Color.black
 
     # collect samples of the scene for this current pixel
     for _ in range(samples):
@@ -73,17 +76,17 @@ def get_pixel(scene, position, samples, pixel_size, depth):
 def trace(ray, scene, depth):
     # Base case; try changing the color and seeing what you get!
     if depth <= 0:
-        return black
+        return Color.black
 
     # check to see if our ray hits an object, or just shoots into space
     intersect = cast_ray(scene, ray, frustrum)
     if intersect:
         # Get the color of that object and the bounce vector for recursion if there is recursion
-        color, bounce = intersect.material.scatter(ray, intersect, scene_refraction_index)
+        swatch, bounce = intersect.material.scatter(ray, intersect, scene_refraction_index)
 
         #TODO: check how this looks with color
         # Here is the actual color blending; it's very simple
-        return color * trace(bounce, scene, depth - 1) if bounce else black
+        return swatch * trace(bounce, scene, depth - 1) if bounce else Color.black
     else:
         return sky_gradient(ray.direction)
 
@@ -95,7 +98,7 @@ def trace(ray, scene, depth):
 def sky_gradient(direction):
     #TODO: Check how this looks with curve correction
     interpolate = (0.5 * (direction.y + 1)) #**0.5
-    return white * (1 - interpolate) + Color(0.5, 0.7, 1.0) * interpolate
+    return Color.white * (1 - interpolate) + Color.Color(0.5, 0.7, 1.0) * interpolate
 
 def cast_ray(ray, scene, frustum):
     closest = None

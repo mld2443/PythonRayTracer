@@ -36,6 +36,13 @@ cyan = Color(0.0,1.0,1.0)
 #MARK: PIL implementation
 
 def image_from_pixels(pixels, dimensions):
+    # Start with a blank image
+    image = Image.new('RGB', dimensions, black.quantize())
+
+    for y in range(dimensions[1]):
+        for x in range(dimensions[0]):
+            image.putpixel((x, y), pixels[y][x])
+
     # This would be a good place to do any post-processing on our image
     # PIL in python 3 uses the Pillow library
-    return Image.new('RGB', dimensions, cyan.quantize())
+    return image
