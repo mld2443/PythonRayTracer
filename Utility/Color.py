@@ -38,4 +38,4 @@ cyan = Color(0.0,1.0,1.0)
 def image_from_pixels(pixels, dimensions):
     # This would be a good place to do any post-processing on our image
     # PIL in python 3 uses the Pillow library
-    return Image.new('RGB', dimensions, green.quantize())
+    return Image.new('RGB', dimensions, cyan.quantize())

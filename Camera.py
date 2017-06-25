@@ -37,10 +37,10 @@ def capture(camera, scene, sampling, depth):
     pixels = []
 
     # Build the image one pixel at a time
-    for y in range(camera.height):
-        for x in range(camera.width):
-            pixel_position = top_left + x * deltaX - y * deltaY
-            pixels[y][x] = get_pixel(scene, pixel_position, (deltaY, deltaY), depth)
+    #for y in range(camera.height):
+    #    for x in range(camera.width):
+    #        pixel_position = top_left + x * deltaX - y * deltaY
+    #        pixels[y][x] = get_pixel(scene, pixel_position, (deltaY, deltaY), depth)
 
     # Convert our array from what is essentially a bitmap to an image
     return image_from_pixels(pixels, (camera.width, camera.height))
