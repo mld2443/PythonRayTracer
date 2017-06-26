@@ -52,7 +52,7 @@ class Camera(object):
     def __str__(self):
         return "Camera (p: {}, w:{}, h: {}, ih: {}, jh: {})".format(self.position, self.width, self.height, abs(self.i_hat), abs(self.j_hat))
 
-def capture(scene, camera, verbose):
+def capture(scene, camera, verbose, draw_heatmap):
     global total_rays
     total_rays = 0
 
@@ -82,10 +82,13 @@ def capture(scene, camera, verbose):
     # Convert our array from what is essentially a bitmap to an image
     image = Color.image_from_pixels(pixels, (camera.width, camera.height))
 
+    if draw_heatmap:
+        heatmap = Color.heatmap_from_data(metadata, (camera.width, camera.height))
+
     if verbose:
         print("Image processing time: {:.2f}s".format(time() - begin))
 
-    return image
+    return image, heatmap
 
 def get_pixel(scene, camera, x, y):
     pixel = Color.black

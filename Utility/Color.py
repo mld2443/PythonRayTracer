@@ -54,7 +54,38 @@ def sky_gradient(angle):
     interpolate = (0.5 * (angle + 1)) #**0.5
     return white * (1 - interpolate) + Color(0.5, 0.7, 1.0) * interpolate
 
+def heat_gradient(value):
+    curve = 1.0/3.0
+    red = min(max(int(255 * (value)**(curve)), 0), 255)
+    cyan = min(max(int(255 * (1 - value)**(curve)), 0), 255)
+    return (red,cyan,cyan)
+
+def normalize(data):
+    lo = hi = data[0][0]
+
+    for row in data:
+        for element in row:
+            if element > hi:
+                hi = element
+            elif element < lo:
+                lo = element
+
+    span = hi - lo
+    return [[(e - lo)/span for e in row] for row in data]
+
 #MARK: PIL implementation
+
+def heatmap_from_data(data, dimensions):
+    # Start with a black image
+    image = Image.new('RGB', dimensions, (0,0,0))
+
+    data = normalize(data)
+
+    for y in range(dimensions[1]):
+        for x in range(dimensions[0]):
+            image.putpixel((x, y), heat_gradient(data[y][x]))
+
+    return image
 
 def image_from_pixels(pixels, dimensions):
     # Start with a black image

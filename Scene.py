@@ -61,4 +61,4 @@ def build_and_draw(params):
         print("Scene built, Number of shapes: {}".format(len(scene)))
         print("Time to build scene: {:.2f}s".format(time() - begin))
 
-    return capture(scene, camera, params.verbose)
+    return capture(scene, camera, params.verbose, params.heatmap)

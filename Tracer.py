@@ -15,6 +15,8 @@ def main():
                       help="Flag for the printing of debug info.")
     parser.add_option("-o", "--output", metavar="FILENAME",
                       help="Specify the name of the output file.")
+    parser.add_option("--heatmap", action="store_true", default=False,
+                      help="Outputs a second image heatmap of the pixels that took the most time.")
     parser.add_option("-m", "--multi", metavar="THREADS", type="int", default=1,
                       help="Number of threads to use while rendering. Default: 1.")
 
@@ -55,10 +57,15 @@ def main():
         # Make a default name if one was not provided
         setattr(params,"output",datetime.now().strftime("%Y-%m-%d %H.%M.%S.png"))
     path = os.path.join(os.getcwd(), params.output)
+    if params.heatmap:
+        name = params.output[:-4] + " heatmap.png"
+        heat_path = os.path.join(os.getcwd(), name)
 
     try:
         # Attempt to open the file
         file = open(path, 'wb')
+        if params.heatmap:
+            heat_file = open(heat_path, 'wb')
     except FileNotFoundError:
         parser.error("Unable to open file {}".format(params.output))
     except IsADirectoryError:
@@ -71,12 +78,18 @@ def main():
     parser.destroy()
 
     # Drawing the image
-    image = Scene.build_and_draw(params)
+    output, heatmap = Scene.build_and_draw(params)
 
     # Save the image as a png
     #TODO: Handle other file formats
-    image.save(file, "PNG")
+    output.save(file, "PNG")
+
+    if heatmap:
+        heatmap.save(heat_file, "PNG")
+
     file.close()
+    if params.heatmap:
+        heat_file.close()
 
 if __name__ == "__main__":
     main()
