@@ -81,6 +81,7 @@ def capture(scene, camera, verbose, draw_heatmap):
 
     # Convert our array from what is essentially a bitmap to an image
     image = Color.image_from_pixels(pixels, (camera.width, camera.height))
+    heatmap = None
 
     if draw_heatmap:
         heatmap = Color.heatmap_from_data(metadata, (camera.width, camera.height))
