@@ -22,13 +22,13 @@ Frustum = namedtuple('Frustum', 'near far')
 class Camera(object):
     """Holds the camera's parameters and calculates the screenspace coordinate frame"""
 
-    def __init__(self, position, direction, up, resolution, FOV, sampling, depth, frustum):
+    def __init__(self, position, direction, up, resolution, FOV, samples, depth, frustum):
         direction = direction.unit()
 
         self.position = position
         self.width = resolution[0]
         self.height = resolution[1]
-        self.sampling = sampling
+        self.samples = samples
         self.depth = depth
         self.frustum = Frustum._make(frustum)
 
@@ -96,7 +96,7 @@ def get_pixel(scene, camera, x, y):
     begin = time()
 
     # Collect samples of the scene for this current pixel
-    for _ in range(camera.sampling):
+    for _ in range(camera.samples):
         # Randomly generate offsets for the current subsample
         x_n = x + uniform(0, 1)
         y_n = y + uniform(0, 1)
@@ -108,7 +108,7 @@ def get_pixel(scene, camera, x, y):
         pixel = pixel + trace(scene, sample, camera.depth, camera.frustum)
 
     # Color correction
-    pixel = pixel / camera.sampling
+    pixel = pixel / camera.samples
     #TODO: check how this looks with transform
     #pixel = pixel.apply_transform(sqrt)
 
