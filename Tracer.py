@@ -22,13 +22,13 @@ def main():
 
     cam_opts = OptionGroup(parser, "Camera Options")
     cam_opts.add_option("-r", "--resolution", type="int", nargs=2,
-                        metavar="WIDTH HEIGHT", default=(320,240),
+                        metavar="WIDTH HEIGHT", default=(240,144),
                         help="Resolution of output image.")
     cam_opts.add_option("--fov", type="float", default=95.0,
                         help="The horizontal field of view of the capture.")
-    cam_opts.add_option("-s", "--samples", type="int", default=20,
+    cam_opts.add_option("-s", "--samples", type="int", default=10,
                         help="How many samples are averaged for a single pixel.")
-    cam_opts.add_option("-d", "--depth", type="int", default=4,
+    cam_opts.add_option("-d", "--depth", type="int", default=5,
                         help="How many times a sample ray can bounce or refract.")
     cam_opts.add_option("-f", "--frustum", type="float", nargs=2,
                         metavar="NEAR FAR", default=(0.1,1000),

@@ -27,7 +27,7 @@ def prepared_scene(params):
                     Vector(0,1,0),
                     up,
                     params.resolution,
-                    params.fov,
+                    5.0,
                     params.samples,
                     params.depth,
                     params.frustum)
