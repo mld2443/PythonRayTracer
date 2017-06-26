@@ -8,7 +8,6 @@
 # shape normals for different effects.
 
 from abc import ABCMeta, abstractmethod
-from collections import namedtuple
 from Utility.Vector import *
 
 class Shape(object):
@@ -21,29 +20,31 @@ class Shape(object):
         # Must include a way for the shape to calculate ray intersection
         pass
 
-Frustum = namedtuple('Frustum', 'near far')
 Intersection = namedtuple('Intersection', 'distance point normal material')
 
 class Plane(Shape):
     """Simple flat infinite plane defined by the plane equation"""
 
     def __init__(self, material, position, normal):
-        self.material = material
-        self.position = Vector._make(position)
-        self.normal = Vector._make(normal).unit()
+        self._material = material
+        self._position = Vector._make(position)
+        self._normal = Vector._make(normal).unit()
         # Constant value so we don't calculate it every time
-        self.n_dot_p = dot(self.normal, self.position)
+        self._n_dot_p = dot(self._normal, self._position)
 
     def intersect_ray(self, ray, frustum):
-        denominator = dot(self.normal, ray.direction)
+        denominator = dot(self._normal, ray.direction)
 
         if denominator is 0.0:
             return None
 
-        distance = (self.n_dot_p - dot(self.normal, ray.origin)) / denominator
+        distance = (self._n_dot_p - dot(self._normal, ray.origin)) / denominator
 
         if frustum.near <= distance <= frustum.far:
-            return Intersection(distance, ray.traverse(distance), self.normal, self.material)
+            return Intersection(distance,
+                                ray.traverse(distance),
+                                self._normal,
+                                self._material)
         return None
 
 Equation = namedtuple('Equation', 'A B C D E F G H I J')
@@ -53,41 +54,52 @@ class Quadric(Shape):
         Ax² + By² + Cz² + 2Dyz + 2Exz + 2Fxy + 2Gx + 2Hy + 2Iz + J = 0"""
 
     def __init__(self, material, position, equation):
-        self.material = material
-        self.position = Vector._make(position)
-        self.equation = Equation._make(equation)
+        self._material = material
+        self._position = Vector._make(position)
+        self._equation = Equation._make(equation)
         # Prepare ABC, DEF, and GHI vectors per the equation
-        self.ABC = Vector._make(self.equation[0:3])
-        self.DEF = Vector._make(self.equation[3:6])
-        self.GHI = Vector._make(self.equation[6:9])
+        self._ABC = Vector._make(self._equation[0:3])
+        self._DEF = Vector._make(self._equation[3:6])
+        self._GHI = Vector._make(self._equation[6:9])
 
     def _get_normal(self, point):
-        relative = point - self.position
+        relative = point - self._position
         # Compute the generic derivative of the equation at given point
-        x = 2 * self.equation.A * relative.x + self.equation.E * relative.z + self.equation.F * relative.y + self.equation.G
-        y = 2 * self.equation.B * relative.y + self.equation.D * relative.z + self.equation.F * relative.x + self.equation.H
-        z = 2 * self.equation.C * relative.z + self.equation.D * relative.y + self.equation.E * relative.x + self.equation.I
+        x = (2 * self._equation.A * relative.x
+             + self._equation.E * relative.z
+             + self._equation.F * relative.y
+             + self._equation.G)
+        y = (2 * self._equation.B * relative.y
+             + self._equation.D * relative.z
+             + self._equation.F * relative.x
+             + self._equation.H)
+        z = (2 * self._equation.C * relative.z
+             + self._equation.D * relative.y
+             + self._equation.E * relative.x
+             + self._equation.I)
         return Vector(x,y,z).unit()
 
-    def __calculate_intersection(self, ray, frustum):
+    def _calculate_intersection(self, ray, frustum):
         # Calculate the positions of the camera and the ray relative to the quadric
-        rCam = ray.origin - self.position
+        rCam = ray.origin - self._position
         rRay = ray.direction
 
         # Precalculate these values for our quadratic equation
         V1 = rRay * rRay
         V2 = Vector(rRay.x * rRay.y, rRay.y * rRay.z, rRay.z * rRay.x) * 2
         V3 = rCam * rRay
-        V4 = Vector(rRay.x * rCam.y + rCam.x * rRay.y, rCam.y * rRay.z + rRay.y * rCam.z, rCam.x * rRay.z + rRay.x * rCam.z)
+        V4 = Vector(rRay.x * rCam.y + rCam.x * rRay.y,
+                    rCam.y * rRay.z + rRay.y * rCam.z,
+                    rCam.x * rRay.z + rRay.x * rCam.z)
         V5 = rRay
         V6 = rCam * rCam
         V7 = Vector(rCam.x * rCam.y, rCam.y * rCam.z, rCam.z * rCam.x) * 2
         V8 = rCam * 2
 
         # Calculate the quadratic coefficients
-        A = dot(self.ABC, V1) + dot(self.DEF, V2)
-        B = dot(self.ABC, V3) + dot(self.DEF, V4) + dot(self.GHI, V5)
-        C = dot(self.ABC, V6) + dot(self.DEF, V7) + dot(self.GHI, V8) + self.equation[9]
+        A = dot(self._ABC, V1) + dot(self._DEF, V2)
+        B = dot(self._ABC, V3) + dot(self._DEF, V4) + dot(self._GHI, V5)
+        C = dot(self._ABC, V6) + dot(self._DEF, V7) + dot(self._GHI, V8) + self._equation[9]
 
         # Calculate the squared value for our quadratic formula
         square = B ** 2 - A * C
@@ -111,7 +123,7 @@ class Quadric(Shape):
         return None
 
     def intersect_ray(self, ray, frustum):
-        distance = self.__calculate_intersection(ray, frustum)
+        distance = self._calculate_intersection(ray, frustum)
 
         if distance is None:
             return None
@@ -119,7 +131,7 @@ class Quadric(Shape):
         intersect = ray.traverse(distance)
         normal = self._get_normal(intersect)
 
-        return Intersection(distance, intersect, normal, self.material)
+        return Intersection(distance, intersect, normal, self._material)
 
 class Sphere(Quadric):
     """Redefinition of spheres to override the normal function for a simpler one"""
@@ -129,4 +141,4 @@ class Sphere(Quadric):
 
     def _get_normal(self, point):
         # Override Quadric's normal function with this faster calculation
-        return (point - self.position).unit()
+        return (point - self._position).unit()

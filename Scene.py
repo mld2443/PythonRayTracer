@@ -1,40 +1,64 @@
 from Utility.Vector import Vector
-from Materials import *
-from Shapes import *
+import Materials
+import Shapes
 from Camera import *
 
 # define constants
 up = Vector(0,0,1)
 
-def prepared_scene():
+def prepared_scene(params):
     # Invent matter
-    matte_white = Lambertian(white)
-    #mirror = Metallic(Color(0.64, 1.0, 1.0), 0.03)
-    #glass = Dielectric(Color(0.73, 1.0, 0.82), 1.2)
-    #shiny_red = Metallic(red, 0.0)
-    matte_green = Lambertian(green)
+    matte_white = Materials.Lambertian(Color.white)
+    matte_green = Materials.Lambertian(Color.green)
+    glass = Materials.Dielectric(Color.Color(0.73, 1.0, 0.82), 1.33)
+    #mirror = Materials.Metallic(Color.Color(0.64, 1.0, 1.0), 0.0)
+    #gunmetal = Materials.Metallic(Color.darkgrey, 0.03)
 
     # Make a scene
-    floor = Shapes.Plane(matte_white, Vector(0,0,0), up)
-    sphere1 = Shapes.Sphere(matte_green, Vector(0,25,3), 3)
-    sphere2 = Shapes.Sphere(matte_white, Vector(-4,35,4), 4)
-    #sphere3 = Sphere(matte_white, Vector([-10,2,6]), 6)
-    sphere4 = Shapes.Sphere(matte_white, Vector(19,34,18), 18)
+    scene = []
+    scene.append(Shapes.Plane(matte_white, Vector(0,0,0), up))
+    scene.append(Shapes.Sphere(matte_green, Vector(-5,250,3), 3))
+    scene.append(Shapes.Sphere(glass, Vector(4,260,5), 5))
+    #scene.append(Shapes.Sphere(matte_green, Vector(-10,45,7), 7))
+    #scene.append(Shapes.Sphere(matte_green, Vector(13,60,20), 20))
 
-    return [floor, sphere1, sphere2, sphere4]
+    # Build a camera obscura
+    camera = Camera(Vector(0,0,3),
+                    Vector(0,10,1),
+                    up,
+                    params.resolution,
+                    95.0,
+                    params.samples,
+                    params.depth,
+                    params.frustum)
+
+    return scene, camera
 
 def random_scene(params):
-
-    return []
-
-def build_and_draw(params):
-    # Build a camera obscura
     camera = Camera(Vector(0,0,8),
                     Vector(0,1,0),
                     up,
-                    params.resolution[0],
-                    params.resolution[1],
-                    params.fov)
+                    params.resolution,
+                    params.fov,
+                    params.samples,
+                    params.depth,
+                    params.frustum)
 
-    scene = prepared_scene() if params.prepared else random_scene(params)
-    return capture(camera, scene, params.samples, params.depth, params.verbose)
+    return [], camera
+
+def build_and_draw(params):
+    if params.verbose:
+        begin = time()
+
+    scene, camera = prepared_scene(params) if params.prepared else random_scene(params)
+
+    if params.debug:
+        print(params)
+        print(camera)
+        print(scene)
+
+    if params.verbose:
+        print("Scene built, Number of shapes: {}".format(len(scene)))
+        print("Time to build scene: {:.2f}s".format(time() - begin))
+
+    return capture(scene, camera, params.verbose)

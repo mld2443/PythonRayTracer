@@ -12,14 +12,16 @@ class Material(object):
         # Must define how to scatter incoming rays
         pass
 
-def schlick(cosine, index):
+def schlick(cosine, eta):
     # The Schlick approximation of the Fresnel equation
-    r0 = (1 - index) / (1 + index)
+    r0 = (1 - eta) / (1 + eta)
     r0 = r0 ** 2
     return r0 + (1 - r0) * ((1 - cosine) ** 5)
 
 class Dielectric(Material):
-    def __init__(color, refr_index):
+    """Glossy, transparent material"""
+
+    def __init__(self, color, refr_index):
         self.color = color
         self.refr_index = refr_index
 
@@ -58,6 +60,7 @@ class Dielectric(Material):
         return self.color, bounce
 
 class Lambertian(Material):
+    """Matte, diffuse material"""
     def __init__(self, color):
         self.color = color
 
@@ -69,7 +72,8 @@ class Lambertian(Material):
         return self.color, bounce
 
 class Metallic(Material):
-    def __init__(color, fuzz):
+    """Shiny, specular material"""
+    def __init__(self, color, fuzz):
         self.color = color
         self.fuzz = fuzz
 

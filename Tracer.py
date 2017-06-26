@@ -28,6 +28,9 @@ def main():
                         help="How many samples are averaged for a single pixel.")
     cam_opts.add_option("-d", "--depth", type="int", default=4,
                         help="How many times a sample ray can bounce or refract.")
+    cam_opts.add_option("-f", "--frustum", type="float", nargs=2,
+                        metavar="NEAR FAR", default=(0.1,1000),
+                        help="Clipping distances of the camera viewport.")
 
     parser.add_option_group(cam_opts)
 
@@ -60,6 +63,9 @@ def main():
         parser.error("Unable to open file {}".format(params.output))
     except IsADirectoryError:
         parser.error("Provided path, '{}', is not a file.".format(params.output))
+
+    if params.debug:
+        print("File '{}' opened.".format(params.output))
 
     # The parser has served its purpose
     parser.destroy()

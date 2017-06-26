@@ -15,7 +15,18 @@ class Color(namedtuple('Color', 'r g b')):
         return Color(self.r+rhs.r, self.g+rhs.g, self.b+rhs.b) if isinstance(rhs, Color) else NotImplemented
 
     def __mul__(self, rhs):
-        return Color(self.r*rhs, self.g*rhs, self.b*rhs) if isinstance(rhs, (int, float)) else NotImplemented
+        if isinstance(rhs, (int, float)):
+            return Color(self.r*rhs, self.g*rhs, self.b*rhs)
+        elif isinstance(rhs, Color):
+            return Color(self.r*rhs.r, self.g*rhs.g, self.b*rhs.b)
+        return NotImplemented
+
+    def __truediv__(self, rhs):
+        if isinstance(rhs, (int, float)):
+            return Color(self.r/rhs, self.g/rhs, self.b/rhs)
+        elif isinstance(rhs, Color):
+            return Color(self.r/rhs.r, self.g/rhs.g, self.b/rhs.b)
+        return NotImplemented
 
     def __str__(self):
         return '{:02X}{:02X}{:02X}'.format(int(255*self.r), int(255*self.g), int(255*self.b))
@@ -33,16 +44,31 @@ yellow = Color(1.0,1.0,0.0)
 magenta = Color(1.0,0.0,1.0)
 cyan = Color(0.0,1.0,1.0)
 
+################
+# Sky gradient #
+################
+# It's important this be bright, as it's the
+# source of much of the light of the scene.
+def sky_gradient(angle):
+    #TODO: Check how this looks with curve correction
+    interpolate = (0.5 * (angle + 1)) #**0.5
+    return white * (1 - interpolate) + Color(0.5, 0.7, 1.0) * interpolate
+
 #MARK: PIL implementation
 
 def image_from_pixels(pixels, dimensions):
-    # Start with a blank image
-    image = Image.new('RGB', dimensions, black.quantize())
+    # Start with a black image
+    image = Image.new('RGB', dimensions, (0,0,0))
 
+    # Quantize will convert a pixel from floating point to 8bit
+    # colorspace. I do this by clipping any value greater than the
+    # max. Another way to do this is to normalize all values with
+    # the largest all at once after calculating all the pixels.
     for y in range(dimensions[1]):
         for x in range(dimensions[0]):
-            image.putpixel((x, y), pixels[y][x])
+            image.putpixel((x, y), pixels[y][x].quantize())
 
-    # This would be a good place to do any post-processing on our image
-    # PIL in python 3 uses the Pillow library
+    # This would be a good place to do any post-processing on the image
+    # For reference, PIL in python 3 uses the Pillow library
+
     return image
