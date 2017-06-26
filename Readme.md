@@ -25,5 +25,24 @@ This project is designed for use with Python 3. The Supercomputer requires you f
   * If you have any trouble with the Python virtual environments, [please see the HPRC wiki page](https://hprc.tamu.edu/wiki/index.php/SW:Python#User_installed_using_virtual_environments).
 3. navigate to your preferred working directory and clone: `git clone https://github.com/mld2443/PythonRayTracer`
 4. `cd PythonRayTracer`
-5. `./Tracer.py --resolution 320x240 --samples 10 --depth 4`
-  * `./Tracer.py -h` will tell you about the available arguments
+5. `./Tracer.py --resolution 320 240 --samples 5 --depth 4`
+  * `./Tracer.py -h` will tell you about the available options
+
+## Crash course on why ray tracing is so slow
+Without having to read the code, here's where all the time goes. The ray tracer will set up the scene, then it will begin to cast rays. for each pixel, it casts the number of rays specified by `samples` (default 10) with small random offsets to prevent aliasing. Each cast ray then checks every object in the scene for an intersection, and then picks the nearest one. It then either reflects or refracts, casting another ray. This ray casting is recusive and can happen up to `depth` (default 5) times unless the ray does not hit anything.
+
+### Put in perspective
+With the default arguments, and the predetermined scene, this is 240 * 144 * 10 = 345,600 samples, each with between 1 to 5 castings. A run with the `--verbose` flag tells me that the program calculated 958,687 rays. Each ray involved calculating the intersection point with every object in the scene (4 quadrics and 1 plane), and then finding the closest. it then calculates the normal, and the bounce, which is different for each material.
+
+Those several million calculations took that same run 150.59s or just shy of 3 minutes. Relatively speaking... that's *very* slow. Most CPUs today can do billions of calculations per second, on one thread. A powerful GPU in a modern video game can blow that out of the water.
+
+#### Okay, but why?
+3 Main reasons:
+* Python is interpreted.
+* This code is single-threaded.
+* Ray tracing techniques are *VERY* expensive compared to modern rasterization techniques (depth buffering).
+  * Those very techniques are responsible for how easy it would be to implement new features, and how good they look.
+There are two more reasons why it's slower: this code makes very little use of [localities](https://en.wikipedia.org/wiki/Locality_of_reference) , (which is something a compiler might help with), and I've opted for a recursive approach for the actual tracing, (as opposed to an iterative one).
+
+#### Can it go faster?
+Absolutely. There are at least 3 fundamentally different ways I can think of to multi-thread the application. This is actually quite open-ended.
