@@ -130,7 +130,7 @@ def trace(scene, ray, depth, frustum):
         return swatch * trace(scene, bounce, depth - 1, frustum) if bounce else Color.black
     else:
         #return Color.white
-        return Color.sky_gradient(ray.direction.y)
+        return Color.sky_gradient(ray.direction.z)
 
 def cast_ray(scene, ray, frustum):
     global total_rays

@@ -17,17 +17,17 @@ def prepared_scene(params):
     # Make a scene
     scene = []
     scene.append(Shapes.Plane(matte_white, Vector(0,0,0), up))
-    scene.append(Shapes.Sphere(matte_green, Vector(-5,250,3), 3))
+    #scene.append(Shapes.Sphere(matte_green, Vector(-3,250,3), 3))
     scene.append(Shapes.Sphere(glass, Vector(4,260,5), 5))
-    #scene.append(Shapes.Sphere(matte_green, Vector(-10,45,7), 7))
+    scene.append(Shapes.Sphere(matte_green, Vector(-5,270,7), 7))
     #scene.append(Shapes.Sphere(matte_green, Vector(13,60,20), 20))
 
     # Build a camera obscura
     camera = Camera(Vector(0,0,3),
-                    Vector(0,10,1),
+                    Vector(0,1,0),
                     up,
                     params.resolution,
-                    95.0,
+                    params.fov,
                     params.samples,
                     params.depth,
                     params.frustum)

@@ -26,13 +26,6 @@ class Dielectric(Material):
         self.refr_index = refr_index
 
     def scatter(self, incoming, intersect, refr_index):
-        reflect_prob = 1.0
-        cosine = 1.0
-        eta = 1.0
-        #outward_normal = Vector([0,0,0])
-
-        reflected = reflect(incoming.direction, intersect.normal)
-
         entering = dot(incoming.direction, intersect.normal)
 
         # Are we entering or exiting the object?
@@ -45,19 +38,15 @@ class Dielectric(Material):
             eta = refr_index / self.refr_index
             cosine = -entering
 
+        reflected = reflect(incoming.direction, intersect.normal)
         refracted = refract(incoming.direction, outward_normal, eta)
 
         if refracted is None:
-            bounce = Ray(intersect.point, reflected)
-        else:
-            reflect_prob = schlick(cosine, self.refr_index)
+            return self.color, Ray(intersect.point, reflected)
 
-        if random.uniform(0,1) < reflect_prob:
-            bounce = Ray(intersect.point, reflected)
-        else:
-            bounce = Ray(intersect.point, refracted)
-
-        return self.color, bounce
+        if random.uniform(0,1) < schlick(cosine, self.refr_index):
+            return self.color, Ray(intersect.point, reflected)
+        return self.color, Ray(intersect.point, refracted)
 
 class Lambertian(Material):
     """Matte, diffuse material"""
@@ -67,9 +56,7 @@ class Lambertian(Material):
     def scatter(self, incoming, intersect, refr_index):
         target = intersect.point + intersect.normal + rand_unit_vector()
 
-        bounce = Ray(intersect.point, target - intersect.point)
-
-        return self.color, bounce
+        return self.color, Ray(intersect.point, target - intersect.point)
 
 class Metallic(Material):
     """Shiny, specular material"""
