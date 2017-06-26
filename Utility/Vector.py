@@ -1,6 +1,7 @@
 from collections import namedtuple
 from operator import mul
 from random import gauss
+from math import sqrt
 
 class Vector(namedtuple('Point', 'x y z')):
     """A math vector capable of indication direction and magnitude"""
@@ -64,10 +65,9 @@ def reflect(direction, normal):
 
 def refract(direction, normal, eta):
     # Refract a vector on surface with normal and eta of refraction index ratio
-    direction = direction.unit()
     dt = dot(direction, normal)
-    discriminant = 1.0 - eta ** 2 * (1.0 - dt ** 2)
-    return (direction - normal * dt) * eta - normal * discriminant**0.5 if discriminant > 0 else None
+    discriminant = 1.0 - ((eta ** 2) * (1.0 - (dt ** 2)))
+    return (direction - (normal * dt)) * eta - (normal * sqrt(discriminant)) if discriminant > 0 else None
 
 
 #MARK: rays
@@ -78,6 +78,9 @@ class Ray(object):
         self.origin = Vector._make(origin)
         self.direction = Vector._make(direction).unit()
 
-    def traverse(self, distance):
+    def traverse(self, distance = 0.000001):
+        return Ray(self.origin + self.direction * distance, self.direction)
+
+    def project(self, distance):
         # Returns a point 'distance' units away from origin in direction
         return self.origin + self.direction * distance

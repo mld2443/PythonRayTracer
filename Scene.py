@@ -11,16 +11,16 @@ def prepared_scene(params):
     matte_white = Materials.Lambertian(Color.white)
     matte_green = Materials.Lambertian(Color.green)
     glass = Materials.Dielectric(Color.Color(0.73, 1.0, 0.82), 1.33)
-    #mirror = Materials.Metallic(Color.Color(0.64, 1.0, 1.0), 0.0)
-    #gunmetal = Materials.Metallic(Color.darkgrey, 0.03)
+    mirror = Materials.Metallic(Color.Color(0.64, 1.0, 1.0), 0.0)
+    gunmetal = Materials.Metallic(Color.darkgrey, 0.03)
 
     # Make a scene
     scene = []
     scene.append(Shapes.Plane(matte_white, Vector(0,0,0), up))
-    #scene.append(Shapes.Sphere(matte_green, Vector(-3,250,3), 3))
+    scene.append(Shapes.Sphere(matte_green, Vector(-3,250,3), 3))
     scene.append(Shapes.Sphere(glass, Vector(4,260,5), 5))
-    scene.append(Shapes.Sphere(matte_green, Vector(-5,270,7), 7))
-    #scene.append(Shapes.Sphere(matte_green, Vector(13,60,20), 20))
+    scene.append(Shapes.Sphere(mirror, Vector(-5,270,7), 7))
+    scene.append(Shapes.Sphere(gunmetal, Vector(13,285,20), 20))
 
     # Build a camera obscura
     camera = Camera(Vector(0,0,3),

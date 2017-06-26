@@ -42,7 +42,7 @@ class Plane(Shape):
 
         if frustum.near <= distance <= frustum.far:
             return Intersection(distance,
-                                ray.traverse(distance),
+                                ray.project(distance),
                                 self._normal,
                                 self._material)
         return None
@@ -128,7 +128,7 @@ class Quadric(Shape):
         if distance is None:
             return None
 
-        intersect = ray.traverse(distance)
+        intersect = ray.project(distance)
         normal = self._get_normal(intersect)
 
         return Intersection(distance, intersect, normal, self._material)

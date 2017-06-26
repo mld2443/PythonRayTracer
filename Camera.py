@@ -123,11 +123,11 @@ def trace(scene, ray, depth, frustum):
     if intersect:
         #return Color.black
         # Get the color of that object and the bounce vector for recursion if there is recursion
-        swatch, bounce = intersect.material.scatter(ray, intersect, scene_refraction_index)
+        sample, bounce = intersect.material.scatter(ray, intersect, scene_refraction_index)
 
         #TODO: check how this looks with color
         # Here is the actual color blending; it's very simple
-        return swatch * trace(scene, bounce, depth - 1, frustum) if bounce else Color.black
+        return sample * trace(scene, bounce, depth - 1, frustum) if bounce else Color.black
     else:
         #return Color.white
         return Color.sky_gradient(ray.direction.z)

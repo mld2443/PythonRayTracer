@@ -45,8 +45,8 @@ class Dielectric(Material):
             return self.color, Ray(intersect.point, reflected)
 
         if random.uniform(0,1) < schlick(cosine, self.refr_index):
-            return self.color, Ray(intersect.point, reflected)
-        return self.color, Ray(intersect.point, refracted)
+            return self.color, Ray(intersect.point, refracted)
+        return self.color, Ray(intersect.point, reflected)
 
 class Lambertian(Material):
     """Matte, diffuse material"""
@@ -67,6 +67,6 @@ class Metallic(Material):
     def scatter(self, incoming, intersect, refr_index):
         reflected = reflect(incoming.direction, intersect.normal)
 
-        bounce = Ray(intersect.point, reflected + fuzz * rand_unit_vector())
+        bounce = Ray(intersect.point, reflected + rand_unit_vector() * self.fuzz)
 
         return self.color, bounce if dot(bounce.direction, intersect.normal) > 0 else None
