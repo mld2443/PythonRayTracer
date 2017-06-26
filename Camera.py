@@ -60,8 +60,7 @@ def capture(scene, camera, verbose):
     pixels = []
     metadata = []
 
-    if verbose:
-        begin = time()
+    begin = time()
 
     # Build the image one pixel at a time
     for y in range(camera.height):
@@ -72,10 +71,11 @@ def capture(scene, camera, verbose):
             pixels[y].append(pixel)
             metadata[y].append(data)
 
+    print("Total tracing time: {:.2f}s".format(time() - begin))
+
     if verbose:
         per_pixel = float(total_rays)/float(camera.width * camera.height)
         print("Total number of rays traced: {}, Average per pixel: {}".format(total_rays, per_pixel))
-        print("Total tracing time: {:.2f}s".format(time() - begin))
         print("Mean time per pixel: [], Median: [], Max: []")
         begin = time()
 
